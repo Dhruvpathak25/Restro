@@ -3,7 +3,6 @@ import {View, StyleSheet, ScrollView} from 'react-native';
 import RestaurantCard from '../components/RestaurantCard';
 
 const RestaurantsScreen = () => {
-  // Sample restaurant data
   const restaurants = [
     {
       id: 1,

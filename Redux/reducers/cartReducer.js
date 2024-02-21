@@ -11,10 +11,9 @@ const initialState = {
 const itemsReducer = (state = initialState, action) => {
   switch (action.type) {
     case ADD_ITEM: {
-      console.log('🚀 ~ itemsReducer ~ action:', action?.payload);
       return {
-        // ...state,
-        items: [action.payload],
+        ...state,
+        items: action.payload,
       };
     }
     default:

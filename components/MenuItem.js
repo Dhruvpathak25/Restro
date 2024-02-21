@@ -12,14 +12,14 @@ const MenuItem = ({
   const handleAddClick = () => {
     setShowQuantity(true);
     setQuantity(1);
-    handleAddItem(item.name, item.price, 1);
+    handleAddItem(item);
   };
 
   const handleDecrease = () => {
     if (quantity > 0) {
       const newQuantity = quantity - 1;
       setQuantity(newQuantity);
-      handleDecrement(item.name, item.price, newQuantity);
+      handleDecrement(item, item.name, item.price, newQuantity);
       if (newQuantity === 0) {
         setShowQuantity(false);
       }
@@ -29,7 +29,7 @@ const MenuItem = ({
   const handleIncrease = () => {
     const count = quantity + 1;
     setQuantity(count);
-    handleIncrement(item.name, item.price, count);
+    handleIncrement(item, item.name, item.price, count);
   };
 
   return (

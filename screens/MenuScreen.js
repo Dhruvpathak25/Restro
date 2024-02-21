@@ -23,65 +23,46 @@ const MenuScreen = ({route}) => {
   const navigation = useNavigation();
   const [selectedCategory, setSelectedCategory] = useState('All');
 
-  const dispatch = useDispatch();
-  const items = useSelector(state => state?.cart?.items);
-  console.log('🚀 ~ MenuScreen ~ items:', items);
-
-  const handleAddItem = (name, price, count) => {
-    const {
-      cart: {items},
-    } = store.getState();
-    let tempArr = [...items];
-    tempArr.push({name: name, count: count, price: price * count});
-
-    let totalQuantity = tempArr.reduce((total, item) => total + item.count, 0);
-    let totalPrice = tempArr.reduce((total, item) => total + item.price, 0);
-
-    console.log('🚀 ~ handleAddItem ~ tempArr:', tempArr);
-
-    dispatch(addItem(tempArr));
+  const handleCategorySelect = category => {
+    setSelectedCategory(category);
   };
 
-  const handleIncrement = (name, price, count) => {
+  const dispatch = useDispatch();
+  const items = useSelector(state => state?.cart?.items);
+  console.log('🚀 ~ MenuScreen ~ items:', JSON.stringify(items));
+
+  const handleIncrement = (nObj, name, price, count) => {
     const {
       cart: {items},
     } = store.getState();
     let tempArr = [...items];
-    const findIndex = tempArr.findIndex(item => item.name === name);
+
+    const findIndex = tempArr.findIndex(item => item.id === nObj.id);
+
     if (findIndex !== -1) {
       tempArr[findIndex] = {
         ...tempArr[findIndex],
-        count: tempArr[findIndex].count + 1,
-        price: price * (tempArr[findIndex].count + 1),
+        count: tempArr[findIndex]?.count + 1,
       };
+    } else {
+      tempArr.push({name: nObj.name, count: 1, price: nObj.price, id: nObj.id});
     }
-
-    let totalQuantity = tempArr.reduce((total, item) => total + item.count, 0);
-    let totalPrice = tempArr.reduce((total, item) => total + item.price, 0);
-
-    console.log('🚀 ~ handleIncrement ~ tempArr:', tempArr);
 
     dispatch(addItem(tempArr));
   };
 
-  const handleDecrement = (name, price, count) => {
+  const handleDecrement = (nObj, name, price, count) => {
     const {
       cart: {items},
     } = store.getState();
     let tempArr = [...items];
-    const findIndex = tempArr.findIndex(item => item.name === name);
-    if (findIndex !== -1 && tempArr[findIndex].count > 0) {
+    const findIndex = tempArr.findIndex(item => item.id === nObj.id);
+    if (findIndex !== -1 && tempArr[findIndex].count >= 0) {
       tempArr[findIndex] = {
         ...tempArr[findIndex],
         count: tempArr[findIndex].count - 1,
-        price: price * (tempArr[findIndex].count - 1),
       };
     }
-
-    let totalQuantity = tempArr.reduce((total, item) => total + item.count, 0);
-    let totalPrice = tempArr.reduce((total, item) => total + item.price, 0);
-
-    console.log('🚀 ~ handleDecrement ~ tempArr:', tempArr);
 
     dispatch(addItem(tempArr));
   };
@@ -94,12 +75,12 @@ const MenuScreen = ({route}) => {
     let totalCount = 0;
     let totalPrice = 0;
 
+    let total = 0;
+
     if (typeof items != 'undefined' || items != '') {
       items.forEach(sublist => {
-        sublist.forEach(item => {
-          totalCount += item.count;
-          totalPrice += item.price;
-        });
+        totalCount += sublist.count;
+        total += sublist.count * sublist.price;
       });
     }
 
@@ -111,7 +92,7 @@ const MenuScreen = ({route}) => {
           </View>
           <View style={styles.quantityPriceContainer}>
             <Text style={styles.quantity}>{totalCount} item</Text>
-            <Text style={styles.price}>₹{totalPrice}</Text>
+            <Text style={styles.price}>₹{total}</Text>
           </View>
         </View>
       );
@@ -122,6 +103,7 @@ const MenuScreen = ({route}) => {
   const menuItems = {
     'Main Course': [
       {
+        id: 1,
         name: 'Chicken Curry',
         description: 'Spicy chicken curry served with rice.',
         price: 120,
@@ -130,6 +112,7 @@ const MenuScreen = ({route}) => {
           'https://www.licious.in/blog/wp-content/uploads/2020/12/Chicken-Curry-recipe.jpg',
       },
       {
+        id: 2,
         name: 'Vegetable Stir Fry',
         description: 'Fresh vegetables stir-fried with sauce.',
         price: 100,
@@ -140,6 +123,7 @@ const MenuScreen = ({route}) => {
     ],
     Snacks: [
       {
+        id: 3,
         name: 'Samosa',
         description: 'Crispy pastry filled with spiced potatoes.',
         price: 150,
@@ -148,6 +132,7 @@ const MenuScreen = ({route}) => {
           'https://static.toiimg.com/thumb/61050397.cms?imgsize=246859&width=800&height=800',
       },
       {
+        id: 4,
         name: 'Chicken Wings',
         description: 'Fried chicken wings with BBQ sauce.',
         price: 300,
@@ -158,6 +143,7 @@ const MenuScreen = ({route}) => {
     ],
     Combos: [
       {
+        id: 5,
         name: 'Burger + Coke',
         description: 'Crispy pastry filled with spiced potatoes.',
         price: 505,
@@ -166,6 +152,7 @@ const MenuScreen = ({route}) => {
           'https://www.jumboking.co.in/wp-content/uploads/2023/01/Zomato_Big-Crunch-Burger-Coke.jpg',
       },
       {
+        id: 6,
         name: 'Burger + Coke + Chicken Wings',
         description: 'Fried chicken wings with BBQ sauce.',
         price: 808,
@@ -176,6 +163,7 @@ const MenuScreen = ({route}) => {
     ],
     Roti: [
       {
+        id: 7,
         name: 'Chapati',
         description: 'Crispy pastry filled with spiced potatoes.',
         price: 50,
@@ -184,6 +172,7 @@ const MenuScreen = ({route}) => {
           'https://static.toiimg.com/thumb/61203720.cms?width=1200&height=900',
       },
       {
+        id: 8,
         name: 'Naan(Butter)',
         description: 'Fried chicken wings with BBQ sauce.',
         price: 70,
@@ -193,6 +182,7 @@ const MenuScreen = ({route}) => {
     ],
     Rice: [
       {
+        id: 9,
         name: 'Plain Rice',
         description: 'Crispy pastry filled with spiced potatoes.',
         price: 500,
@@ -201,6 +191,7 @@ const MenuScreen = ({route}) => {
           'https://vaya.in/recipes/wp-content/uploads/2019/01/Jeera-Rice.jpg',
       },
       {
+        id: 10,
         name: 'Chicken Fried Rice',
         description: 'Fried chicken wings with BBQ sauce.',
         price: 808,
@@ -211,6 +202,7 @@ const MenuScreen = ({route}) => {
     ],
     Sweets: [
       {
+        id: 11,
         name: 'Gulab Jamun',
         description: 'Crispy pastry filled with spiced potatoes.',
         price: 250,
@@ -219,6 +211,7 @@ const MenuScreen = ({route}) => {
           'https://static.toiimg.com/thumb/63799510.cms?imgsize=1091643&width=800&height=800',
       },
       {
+        id: 12,
         name: 'Cake',
         description: 'Fried chicken wings with BBQ sauce.',
         price: 700,
@@ -335,7 +328,7 @@ const MenuScreen = ({route}) => {
                         <MenuItem
                           key={index}
                           item={menuItem}
-                          handleAddItem={handleAddItem}
+                          handleAddItem={handleIncrement}
                           handleIncrement={handleIncrement}
                           handleDecrement={handleDecrement}
                         />
@@ -577,6 +570,7 @@ const styles = StyleSheet.create({
   continue: {
     fontSize: 16,
     fontWeight: 'bold',
+    color: 'white',
   },
   quantityPriceContainer: {
     flexDirection: 'column',
@@ -586,9 +580,11 @@ const styles = StyleSheet.create({
   quantity: {
     fontSize: 16,
     fontWeight: 'bold',
+    color: 'white',
   },
   price: {
     fontSize: 16,
+    color: 'white',
     fontWeight: 'bold',
   },
 });
